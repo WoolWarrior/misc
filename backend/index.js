@@ -42,6 +42,25 @@ app.put('/tasks/:name/status', (req, res) => {
   res.json(task);
 });
 
+// POST endpoint to add a new task
+app.post('/tasks', (req, res) => {
+  const { name, description, status } = req.body;
+  const validStatuses = ['to do', 'completed'];
+
+  if (!name || !description || !validStatuses.includes(status)) {
+    return res.status(400).json({ error: 'Invalid task data.' });
+  }
+
+  // Check for duplicate task name
+  if (tasks.find(t => t.name === name)) {
+    return res.status(409).json({ error: 'Task with this name already exists.' });
+  }
+
+  const newTask = { name, description, status };
+  tasks.push(newTask);
+  res.status(201).json(newTask);
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port} `);
 });
